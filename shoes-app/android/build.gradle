@@ -1,0 +1,28 @@
+subprojects {
+    afterEvaluate {
+        val androidExt = extensions.findByName("android")
+        if (androidExt != null) {
+            val setter = androidExt.javaClass.methods.firstOrNull {
+                it.name == "setCompileSdkVersion" &&
+                        it.parameterTypes.size == 1 &&
+                        it.parameterTypes[0] == Int::class.javaPrimitiveType
+            } ?: androidExt.javaClass.methods.firstOrNull {
+                it.name == "compileSdkVersion" &&
+                        it.parameterTypes.size == 1 &&
+                        it.parameterTypes[0] == Int::class.javaPrimitiveType
+            }
+
+            if (setter != null) {
+                setter.invoke(androidExt, 36)
+                logger.lifecycle("✔ ${project.name}: compileSdk -> 36")
+            } else {
+                logger.lifecycle("✘ ${project.name}: مفيش setter لـ compileSdk")
+            }
+        }
+
+        tasks.withType<JavaCompile>().configureEach {
+            sourceCompatibility = "17"
+            targetCompatibility = "17"
+        }
+    }
+}

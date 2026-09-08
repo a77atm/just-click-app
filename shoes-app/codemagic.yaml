@@ -1,0 +1,53 @@
+# codemagic.yaml
+definitions:
+  scripts:
+    - &deploy_firestore
+      name: Deploy Firestore rules + indexes
+      script: |
+        chmod +x scripts/deploy_firestore_indexes.sh
+        ./scripts/deploy_firestore_indexes.sh
+
+workflows:
+  android-debug:
+    name: Android Debug
+    max_build_duration: 30
+    environment:
+      # pubspec.lock generated with flutter >= 3.44 - do NOT pin an old version.
+      # (FLUTTER_VERSION as a var is ignored by Codemagic; this key is the real one.)
+      flutter: stable
+      vars:
+        FIREBASE_PROJECT_ID: "shoesapp-e64be"
+      groups:
+        # firebase group in Codemagic must contain FIREBASE_TOKEN
+        # (firebase login:ci)
+        - firebase
+    scripts:
+      - *deploy_firestore
+      - flutter pub get
+      - flutter build apk --debug
+    artifacts:
+      - build/app/outputs/flutter-apk/app-debug.apk
+    publishing:
+      email:
+        recipients:
+          - a7md7atm0@gmail.com
+
+  android-release:
+    name: Android Release
+    max_build_duration: 30
+    environment:
+      flutter: stable
+      vars:
+        FIREBASE_PROJECT_ID: "shoesapp-e64be"
+      groups:
+        - firebase
+    scripts:
+      - *deploy_firestore
+      - flutter pub get
+      - flutter build apk --release
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+    publishing:
+      email:
+        recipients:
+          - a7md7atm0@gmail.com
