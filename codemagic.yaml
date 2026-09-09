@@ -1,32 +1,30 @@
-# codemagic.yaml
-definitions:
-  scripts:
-    - &deploy_firestore
-      name: Deploy Firestore rules + indexes
-      script: |
-        chmod +x scripts/deploy_firestore_indexes.sh
-        ./scripts/deploy_firestore_indexes.sh
-
+# codemagic.yaml — لازم يفضل في جذر الريبو
 workflows:
   android-debug:
     name: Android Debug
     max_build_duration: 30
+    working_directory: shoes-app
     environment:
-      # pubspec.lock generated with flutter >= 3.44 - do NOT pin an old version.
-      # (FLUTTER_VERSION as a var is ignored by Codemagic; this key is the real one.)
       flutter: stable
       vars:
         FIREBASE_PROJECT_ID: "shoesapp-e64be"
       groups:
-        # firebase group in Codemagic must contain FIREBASE_TOKEN
-        # (firebase login:ci)
         - firebase
     scripts:
-      - *deploy_firestore
-      - flutter pub get
-      - flutter build apk --debug
+      - name: Firestore rules + indexes
+        script: |
+          chmod +x scripts/deploy_firestore_indexes.sh
+          ./scripts/deploy_firestore_indexes.sh
+      - name: Verify google-services.json
+        script: |
+          test -f android/app/google-services.json \
+            || { echo "!! android/app/google-services.json مفقود"; exit 1; }
+      - name: Get packages
+        script: flutter pub get
+      - name: Build debug APK
+        script: flutter build apk --debug
     artifacts:
-      - build/app/outputs/flutter-apk/app-debug.apk
+      - shoes-app/build/app/outputs/flutter-apk/app-debug.apk
     publishing:
       email:
         recipients:
@@ -35,6 +33,7 @@ workflows:
   android-release:
     name: Android Release
     max_build_duration: 30
+    working_directory: shoes-app
     environment:
       flutter: stable
       vars:
@@ -42,11 +41,20 @@ workflows:
       groups:
         - firebase
     scripts:
-      - *deploy_firestore
-      - flutter pub get
-      - flutter build apk --release
+      - name: Firestore rules + indexes
+        script: |
+          chmod +x scripts/deploy_firestore_indexes.sh
+          ./scripts/deploy_firestore_indexes.sh
+      - name: Verify google-services.json
+        script: |
+          test -f android/app/google-services.json \
+            || { echo "!! android/app/google-services.json مفقود"; exit 1; }
+      - name: Get packages
+        script: flutter pub get
+      - name: Build release APK
+        script: flutter build apk --release
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - shoes-app/build/app/outputs/flutter-apk/app-release.apk
     publishing:
       email:
         recipients:
