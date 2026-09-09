@@ -1,0 +1,38 @@
+# Flutter / Dart
+shoes-app/build/
+shoes-app/.dart_tool/
+shoes-app/.flutter-plugins
+shoes-app/.flutter-plugins-dependencies
+shoes-app/.packages
+shoes-app/*.iml
+
+# Android
+shoes-app/android/build/
+shoes-app/android/.gradle/
+shoes-app/android/local.properties
+shoes-app/android/app/debug/
+shoes-app/android/app/profile/
+shoes-app/android/app/release/
+shoes-app/android/*.iml
+
+# iOS
+shoes-app/ios/Flutter/ephemeral/
+shoes-app/ios/Flutter/Generated.xcconfig
+shoes-app/ios/Flutter/flutter_export_environment.sh
+shoes-app/ios/Pods/
+
+# أسرار حقيقية — متترفعش على GitHub
+# ملاحظة: google-services.json و GoogleService-Info.plist مش هنا عن قصد،
+# لأنهم لازم يكونوا في الريبو عشان الـ CI يبني بيهم (وهما جوه الـ APK أصلاً).
+*.keystore
+*.jks
+key.properties
+serviceAccount*.json
+
+# Node
+node_modules/
+
+# محرّرات / نظام
+.idea/
+.vscode/
+.DS_Store
